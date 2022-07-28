@@ -1,0 +1,9 @@
+setuptools
+wheel
+build
+twine
+varvault==2.0.0
+pytest>=6.2.1
+pytest-html>=2.1.1
+pytest-metadata>=1.10.0
+pytest-ordering>=0.6
