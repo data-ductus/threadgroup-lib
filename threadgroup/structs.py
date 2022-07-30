@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Tuple, overload
+from typing import Dict, Any, List, Tuple
 
 
 class Function:

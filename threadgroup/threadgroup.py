@@ -60,7 +60,7 @@ class ThreadGroup:
         self._executed = True
         return self.get_results()
 
-    def get_results(self) -> ResultList[ResultStruct]:
+    def get_results(self):
         return self.results
 
 
@@ -68,7 +68,7 @@ def create_function(fn: Callable, *fn_args, **fn_kwargs) -> Function:
     return Function(fn, *fn_args, **fn_kwargs)
 
 
-def threaded_execution(functions: List[Function]) -> ResultList[ResultStruct]:
+def threaded_execution(functions: List[Function]):
     f"""
     Executes a list of {Function} objects using a {ThreadPoolExecutor} object.
     :param functions: An iterable of {Function} objects to run in a threaded manner. 
@@ -110,7 +110,7 @@ def run_futures(futures: List[Future]):
     return [future.result() for future in futures]
 
 
-def compile_results(functions: List[Function], results: List[Any]) -> ResultList[ResultStruct]:
+def compile_results(functions: List[Function], results: List[Any]):
     """
     Compiles the results from a threaded execution of a bunch of functions into something where the result from a function is mapped to the name of the function
     :param functions: The list of functions.
