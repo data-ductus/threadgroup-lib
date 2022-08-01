@@ -30,7 +30,7 @@ class TestWithVarvault:
             pass
 
     def test_with_varvault(self):
-        vault = varvault.create_vault(Keyring, "vault", varvault_vault_filename_to=vault_file, varvault_filehandler_class=varvault.FileTypes.JSON)
+        vault = varvault.create_vault(Keyring, "vault", varvault_filehandler_to=varvault.JsonFilehandler(vault_file))
         sleep = 0.5
         init = threadgroup.ThreadGroup()
         use = threadgroup.ThreadGroup()
