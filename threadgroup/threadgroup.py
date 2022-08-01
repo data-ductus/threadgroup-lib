@@ -11,12 +11,16 @@ from .structs import Function, ResultStruct, ResultList
 
 class ThreadGroup:
 
-    def __init__(self):
+    def __init__(self, max_workers: int = None):
         """
         Defines a thread group that functions can be registered to using a decorator.
+        :param max_workers: An optional integer that says how many workers should be permitted to run at any time. Default: None (unlimited)
         """
         self.functions: Dict[str, Function] = dict()
         self.results: ResultList[ResultStruct] = ResultList()
+
+        self.max_workers = max_workers
+
         self._executed = False
 
     def __call__(self, *args, **kwargs):
@@ -56,7 +60,7 @@ class ThreadGroup:
         fn.fn_kwargs = fn_kwargs
 
     def execute(self):
-        self.results = threaded_execution(list(self.functions.values()))
+        self.results = threaded_execution(list(self.functions.values()), max_workers=self.max_workers)
         self._executed = True
         return self.get_results()
 
@@ -68,13 +72,14 @@ def create_function(fn: Callable, *fn_args, **fn_kwargs) -> Function:
     return Function(fn, *fn_args, **fn_kwargs)
 
 
-def threaded_execution(functions: List[Function]):
+def threaded_execution(functions: List[Function], max_workers: int = None):
     f"""
     Executes a list of {Function} objects using a {ThreadPoolExecutor} object.
     :param functions: An iterable of {Function} objects to run in a threaded manner. 
+    :param max_workers: An integer that says how many workers should be used. Default: None (unlimited) 
     :return: The results of the functions executed in a list .
     """
-    with ThreadPoolExecutor() as executor:
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
         # Constructing some future objects
         futures = [construct_future(executor, f.fn, *f.fn_args, **f.fn_kwargs) for f in functions]
         try:
