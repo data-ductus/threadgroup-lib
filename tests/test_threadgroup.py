@@ -116,3 +116,49 @@ class TestThreadGroup:
 
         second.execute()
         assert second.executed
+
+    def test_call_registered_function_normally(self):
+        test = threadgroup.ThreadGroup()
+
+        @test.register()
+        def f1(_a1, _a2, *, _kw1=None):
+            assert _a1 == 1
+            assert _a2 == "2"
+            assert _kw1 == 3.14
+            return _a1, _a2, _kw1
+
+        a1, a2, kw1 = f1(1, "2", _kw1=3.14)
+        assert a1 == 1
+        assert a2 == "2"
+        assert kw1 == 3.14
+        assert not test.executed
+
+    def test_asdict(self):
+        test = threadgroup.ThreadGroup()
+
+        @test.register()
+        def f1():
+            time.sleep(0.1)
+            return 1, 1.2
+
+        @test.register()
+        def f2():
+            time.sleep(0.1)
+            return 2
+
+        @test.register()
+        def f3():
+            time.sleep(0.1)
+            return 3
+
+        @test.register()
+        def f4():
+            time.sleep(0.1)
+            return 4
+
+        r: threadgroup.ResultList = test.execute()
+        assert f"{r.asdict()}" == "{'f1': [(1, 1.2)], 'f2': [2], 'f3': [3], 'f4': [4]}"
+
+        functions = [threadgroup.create_function(f1), threadgroup.create_function(f1), threadgroup.create_function(f1), threadgroup.create_function(f2), threadgroup.create_function(f3), threadgroup.create_function(f4)]
+        r: threadgroup.ResultList = threadgroup.threaded_execution(functions)
+        assert f"{r.asdict()}" == "{'f1': [(1, 1.2), (1, 1.2), (1, 1.2)], 'f2': [2], 'f3': [3], 'f4': [4]}"

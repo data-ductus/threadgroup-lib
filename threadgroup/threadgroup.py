@@ -45,12 +45,12 @@ class ThreadGroup:
             return 0
         """
         def outer(fun: Callable):
-            self.functions[fun.__name__] = create_function(fun, *fn_args, **fn_kwargs)
 
             @functools.wraps(fun)
             def caller(*args, **kwargs):
                 r = fun(*args, **kwargs)
                 return r
+            self.functions[fun.__name__] = create_function(caller, *fn_args, **fn_kwargs)
             return caller
         return outer
 

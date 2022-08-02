@@ -44,3 +44,14 @@ class ResultList(list):
             if r.fn_name == fn_name:
                 results.append(r)
         return results
+
+    def asdict(self):
+        d: Dict[str, List[ResultStruct]] = dict()
+        for r in self:
+            r: ResultStruct
+            if r.fn_name not in d:
+                d[r.fn_name] = list()
+            d[r.fn_name].append(r.result)
+
+        return d
+
